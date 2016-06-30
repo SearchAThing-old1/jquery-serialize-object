@@ -5,6 +5,34 @@
  * @license BSD
  * @version 2.5.0
  */
+$.fn.serializeArrayWithCheckboxes = function() {
+    var rCRLF = /\r?\n/g;
+
+    return this.map(function(){
+        return this.elements ? jQuery.makeArray( this.elements ) : this;
+    })
+
+    .map(function( i, elem ){
+        var val = jQuery( this ).val();
+
+        if (val == null) {
+            return val == null
+            //next 2 lines of code look if it is a checkbox and set the value to blank
+            //if it is unchecked
+        } else if (this.type == "checkbox" && this.checked == false) {
+            return { name: this.name, value: this.checked ? this.value : ""}
+            //next lines are kept from default jQuery implementation and
+            //default to all checkboxes = on
+        } else {
+            return jQuery.isArray( val ) ?
+                jQuery.map( val, function( val, i ){
+                    return { name: elem.name, value: val.replace( rCRLF, "\r\n" ) };
+                }) :
+                { name: elem.name, value: val.replace( rCRLF, "\r\n" ) };
+            }
+        }).get();
+};
+
 (function(root, factory) {
 
   // AMD
@@ -83,7 +111,7 @@
     function encode(pair) {
       switch ($('[name="' + pair.name + '"]', $form).attr("type")) {
         case "checkbox":
-          return pair.value === "on" ? true : pair.value;
+          return pair.value === "on" ? 'true' : 'false';
         default:
           return pair.value;
       }
@@ -125,13 +153,13 @@
 
   FormSerializer.serializeObject = function serializeObject() {
     return new FormSerializer($, this).
-      addPairs(this.serializeArray()).
+      addPairs(this.serializeArrayWithCheckboxes()).
       serialize();
   };
 
   FormSerializer.serializeJSON = function serializeJSON() {
     return new FormSerializer($, this).
-      addPairs(this.serializeArray()).
+      addPairs(this.serializeArrayWithCheckboxes()).
       serializeJSON();
   };
 
