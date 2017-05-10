@@ -24,7 +24,7 @@ Installation
 **option 1: Bower**
 
 ```sh
-$ bower install https://github.com/kylehotchkiss/jquery-serialize-object.git --save
+$ bower install https://github.com/kylehotchkiss/jquery-serialize-object.git#master --save
 ```
 
 **option 2: Manual**
